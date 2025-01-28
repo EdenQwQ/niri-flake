@@ -1511,6 +1511,88 @@
             };
           }
           {
+            shadow =
+              ordered-section [
+                {
+                  enable =
+                    optional types.bool false
+                    // {
+                      description = ''
+                        Whether to enable shadows for windows.
+                      '';
+                    };
+                }
+                {
+                  softness =
+                    optional types.int 30
+                    // {
+                      description = ''
+                        controls the shadow softness/size in logical pixels, same as CSS box-shadow blur radius. Setting softness to 0 will give you hard shadows.
+                      '';
+                    };
+                }
+                {
+                  spread =
+                    optional types.int 5
+                    // {
+                      description = ''
+                        The distance to expand the window rectangle in logical pixels, same as CSS box-shadow spread.
+                      '';
+                    };
+                }
+                {
+                  offset =
+                    section {
+                      x = optional types.int 0;
+                      y = optional types.int 5;
+                    }
+                    // {
+                      description = ''
+                        Moves the shadow relative to the window in logical pixels, same as CSS box-shadow offset.
+                      '';
+                    };
+                }
+                {
+                  draw-behind-window =
+                    optional types.bool true
+                    // {
+                      description = ''
+                        Set `draw-behind-window` to `true` to make shadows draw behind the window rather than just around it.
+                        Note that niri has no way of knowing about the CSD window corner radius. It has to assume that windows have square corners, leading to shadow artifacts inside the CSD rounded corners. This setting fixes those artifacts.
+                        However, instead you may want to set `prefer-no-csd` and/or `geometry-corner-radius`. Then, niri will know the corner radius and draw the shadow correctly, without having to draw it behind the window. These will also remove client-side shadows if the window draws any.
+                      '';
+                    };
+                }
+                {
+                  color =
+                    optional types.str "#00000070"
+                    // {
+                      description = ''
+                        The color of the shadow.
+                      '';
+                    };
+                }
+                {
+                  inactive-color =
+                    optional types.str "#00000054"
+                    // {
+                      description = ''
+                        Overrides the shadow color for inactive windows; by default, a more transparent color is used.
+                      '';
+                    };
+                }
+              ]
+              // {
+                description = ''
+                  Shadows are drawn around windows or behind them, depending on the `draw-behind-window` setting.
+                  Shadow drawing will follow the window corner radius set with the `geometry-corner-radius` window rule.
+                  Currently, shadow drawing only supports matching radius for all corners.
+                  If you set `geometry-corner-radius` to four values instead of one,
+                  the first (top-left) corner radius will be used for shadows.
+                '';
+              };
+          }
+          {
             insert-hint =
               ordered-section [
                 {
@@ -2664,6 +2746,21 @@
         ])
         (borderish "focus-ring" cfg.layout.focus-ring)
         (borderish "border" cfg.layout.border)
+        (plain "shadow" [
+          (toggle "off" cfg.layout.shadow [
+            (leaf "softness" cfg.layout.shadow.softness)
+            (leaf "spread" cfg.layout.shadow.spread)
+            (plain "offset" [
+              (leaf "x" cfg.layout.shadow.offset.x)
+              (leaf "y" cfg.layout.shadow.offset.y)
+            ])
+            (leaf "offset-x" cfg.layout.shadow.offset.x)
+            (leaf "offset-y" cfg.layout.shadow.offset.y)
+            (flag' "draw-behind-window" cfg.layout.shadow.draw-behind-window)
+            (nullable leaf "color" cfg.layout.shadow.color)
+            (nullable leaf "inactive-color" cfg.layout.shadow.inactive-color)
+          ])
+        ])
         (plain "insert-hint" [
           (toggle "off" cfg.layout.insert-hint [
             (nullable leaf "color" cfg.layout.insert-hint.display.color or null)
